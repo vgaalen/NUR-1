@@ -52,7 +52,7 @@ def LU_solve(LU, y):
 #     print(mat@LU_solve(mat.copy(), np.array([25,74,91],dtype=np.float64)))
 
 
-def TwoA(data):
+def TwoA(data, silent=True):
     ##############
     ##### 2a #####
     ##############
@@ -66,7 +66,8 @@ def TwoA(data):
     LU = LU_decomp(matrix.copy().T)
     c = LU_solve(LU, data[:,1].astype(np.float128).copy())
 
-    print(c)
+    if not silent:
+        print(c)
     np.savetxt('vandermonde_coefficients.txt', c, delimiter=' ')
 
     x = np.linspace(np.min(data[:,0]), np.max(data[:,0]), 1000)
@@ -98,7 +99,7 @@ def TwoA(data):
     ax[1].legend()
     #plt.yscale('log')
     fig.tight_layout()
-    fig.savefig('vandermonde.png')
+    fig.savefig('plots/vandermonde.png')
     return fig, ax
 
 
@@ -208,7 +209,7 @@ def TwoB(data, fig=None, ax=None):
         ax[1].legend()
         #plt.yscale('log')
         fig.tight_layout()
-        plt.savefig('neville_compare.png')
+        plt.savefig('plots/neville_compare.png')
         plt.close()
 
 def TwoC(data):
@@ -285,7 +286,7 @@ def TwoC(data):
     #ax[0].set_yscale('log')
     #ax[1].set_yscale('log')
     fig.tight_layout()
-    fig.savefig('vandermonde_itt.png')
+    fig.savefig('plots/vandermonde_itt.png')
 
     for t in text:
         t.remove()
@@ -300,14 +301,14 @@ def TwoC(data):
     ax[0].set_ylim([np.min(data[:,1])-50, np.max(data[:,1])+50])
     ax[1].set_ylim([np.min(data[:,1])-50, np.max(data[:,1])+50])
     ax[2].set_ylim([np.min(data[:,1])-50, np.max(data[:,1])+50])
-    fig.savefig('vandermonde_itt_zoom.png')
+    fig.savefig('plots/vandermonde_itt_zoom.png')
 
     plt.close()
 
 
 if __name__=='__main__':
     data = np.loadtxt("Vandermonde.txt")
-    fig, ax = TwoA(data)
+    fig, ax = TwoA(data, silent=False)
     TwoB(data, fig=fig, ax=ax)
     TwoC(data)
 

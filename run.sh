@@ -13,22 +13,22 @@ if [ ! -e Vandermonde.txt ]; then
   wget home.strw.leidenuniv.nl/~daalen/Handin_files/Vandermonde.txt
 fi
 
-echo "Run the script for 1a"
-python3 Poisson.py
+if [ ! -e 1a.txt ]; then
+  echo "Run the script for 1a"
+  python3 Poisson.py
+fi
 
-echo "Run the script for 2"
-python3 vandermonde.py
-
-
-
-# code that makes a movie of the movie frames
-#ffmpeg -framerate 25 -pattern_type glob -i "plots/snap*.png" -s:v 640x480 -c:v libx264 -profile:v high -level 4.0 -crf 10 -tune animation -preset slow -pix_fmt yuv420p -r 25 -threads 0 -f mp4 sinemovie.mp4
+if [ ! -e Vandermonde.txt ]; then
+  echo "Run the script for 2"
+  python3 vandermonde.py
+fi
 
 echo "Generating the pdf"
 
-pdflatex template.tex
-bibtex template.aux
-pdflatex template.tex
-pdflatex template.tex
+#pdflatex template.tex -quiet=true
+pdflatex -interaction=nonstopmode template.tex > tex_output.txt
+#bibtex template.aux
+#pdflatex template.tex
+#pdflatex template.tex
 
 

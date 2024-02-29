@@ -23,7 +23,8 @@ if __name__=='__main__':
         output[i] = poisson_dist_log(lambda_values[i], k_values[i])
     
     with open("1a.txt", 'w') as f:
-        f.write("(\lambda, k), Poisson Probability Distribution\n")
+        f.write(r"(lambda, k), Poisson Probability Distribution")
+        f.write("\n")
         for i in range(len(k_values)):
             f.write(f"({lambda_values[i]}, {k_values[i]}) {poisson_dist(lambda_values[i], k_values[i])} ")
             f.write("\n")

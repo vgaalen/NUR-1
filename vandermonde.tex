@@ -7,7 +7,7 @@ find a 19th degree Lagrange polynomial for a sample dataset.
 See Figure \ref{fig:vandermonde}.
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{vandermonde.png}
+    \includegraphics[width=0.8\textwidth]{plots/vandermonde.png}
     \caption{The 19th degree Lagrange polynomial (evaluated for 1000 points 
     between highest- and lowest x-values in the data) and the datapoints it 
     was fitted to. The black text indicates the absolute value of the 
@@ -15,6 +15,7 @@ See Figure \ref{fig:vandermonde}.
     \label{fig:vandermonde}
 \end{figure}
 
+\noindent
 This is the code used for this exercise:
 \lstinputlisting[language=python,firstline=1, lastline=103]{vandermonde.py}
 
@@ -31,7 +32,7 @@ do find a genuine 19th degree polynomial.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{neville_compare.png}
+    \includegraphics[width=0.8\textwidth]{plots/neville_compare.png}
     \caption{Comparison between the 19th degree Lagrange polynomial found
     using Neville's algorithm and the one found using LU decomposition. The 
     19th degree Lagrange polynomial was evaluated for 1000 points between 
@@ -41,20 +42,21 @@ do find a genuine 19th degree polynomial.
     \label{fig:neville}
 \end{figure}
 
+\noindent
 This is the code used for this exercise:
 \lstinputlisting[language=python, firstline=106, lastline=212]{vandermonde.py}
 
 \subsection*{2c}
 In this exercise, we itterate on the LU decomposition done in (2a) to improve
 the solution. This is done by solving the system for the error found in the
-previous itteration. This allows us to improve the solution as, if $c=c'+\delta c$,
-then $(A\.c)=(A\.c')+(A\.\delta c)$.
+previous itteration. This allows us to improve the solution as, if $c=c\mathaccent+\delta c$,
+then $(A\.c)=(A\.c\mathaccent)+(A\.\delta c)$.
 Figures \ref{fig:lu_itt} and \ref{fig:lu_itt_zoom} shows the result of this itterative improvement, with
 snapshots at 1 and 10 itterations.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{vandermonde_itt.png}
+    \includegraphics[width=0.8\textwidth]{plots/vandermonde_itt.png}
     \caption{The 19th degree Lagrange polynomial derived using LU 
     decomposition (left) and itterative improvents thereon, 1 and 10 
     itterations in the center and on the right resp. (evaluated for 1000 
@@ -66,7 +68,7 @@ snapshots at 1 and 10 itterations.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{vandermonde_itt_zoom.png}
+    \includegraphics[width=0.8\textwidth]{plots/vandermonde_itt_zoom.png}
     \caption{The 19th degree Lagrange polynomial derived using LU 
     decomposition (left) and itterative improvents thereon, 1 and 10 
     itterations in the center and on the right resp. (evaluated for 1000 
@@ -82,6 +84,7 @@ discussed in (2a)-(2c). When averaging over 10 runs we get the following:
 
 \lstinputlisting{vandermonde_timing.txt}
 
+\noindent
 This shows that this implementation of Crout's algorithm and solving using
 LU decomposition is faster than this implementation of Neville's algorithm.
 Furthermore, it shows how much faster the itterative improvement is 
@@ -89,5 +92,6 @@ to the first solution. This is because the LU decomposition only has to be
 performed once, suggesting that this operation is the bottleneck of the 
 algorithm.
 
+\noindent
 This is the code used in this exercise:
 \lstinputlisting[language=python]{vandermonde.py}
