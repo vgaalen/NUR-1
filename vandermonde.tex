@@ -1,17 +1,18 @@
+\newpage
 \section{Vandermonde Matrix}
 For this exercise, I implemented a function to solve a system of linear equations
 using LU decomposition. This was then applied to the Vandermonde matrix to
-find a 19th degree Lagrange polynomial for a sample dataset.
+find a 19th degree Lagrange polynomial for the provided dataset.
 
 \subsection*{2a}
-See Figure \ref{fig:vandermonde}.
+Figure \ref{fig:vandermonde} shows the result of the LU decomposition, implemented using Crout's algorithm.
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{plots/vandermonde.png}
     \caption{The 19th degree Lagrange polynomial (evaluated for 1000 points 
     between highest- and lowest x-values in the data) and the datapoints it 
-    was fitted to. The black text indicates the absolute value of the 
-    deviation of the polynomial to the datapoints.}
+    was fitted to. The lower plots indicate the absolute value of the 
+    deviation of the polynomial to the datapoints and the right two plots are zoom-ins of the left two.}
     \label{fig:vandermonde}
 \end{figure}
 
@@ -20,6 +21,7 @@ This is the code used for this exercise:
 \lstinputlisting[language=python,firstline=1, lastline=103]{vandermonde.py}
 
 \subsection*{2b}
+Here we compare the polynomial found using LU decomposition to one found using Neville's algorithm.
 The polynomial found using Neville's algorithm deviates significantly
 from the one found in (2a) in a number of places (see Figure \ref{fig:neville}). 
 On the intervals where the LU decomposition polynomial is well behaved, the 
@@ -29,6 +31,8 @@ datapoints around the interval, the Neville polynomial does worse in two
 cases and better in two others. This difference is due to the way these 
 algorithms handle the edge cases, where there are not enough datapoints to 
 do find a genuine 19th degree polynomial.
+At the x-values of the actual datapoints, Nevilles algorithm is able to find y-values much closer to the actual data 
+than the LU decomposition (see the bottom half of \ref{fig:neville}).
 
 \begin{figure}
     \centering
@@ -49,10 +53,13 @@ This is the code used for this exercise:
 \subsection*{2c}
 In this exercise, we itterate on the LU decomposition done in (2a) to improve
 the solution. This is done by solving the system for the error found in the
-previous itteration. This allows us to improve the solution as, if $c=c\mathaccent+\delta c$,
-then $(A\.c)=(A\.c\mathaccent)+(A\.\delta c)$.
+previous itteration. This should allow us to improve the solution as, if $c=c\mathaccent+\delta c$,
+then $(A c)=(A c')+(A \delta c)$.
 Figures \ref{fig:lu_itt} and \ref{fig:lu_itt_zoom} shows the result of this itterative improvement, with
 snapshots at 1 and 10 itterations.
+It turns out that these itteration do not reduce the error. This makes sense for the low x-values, where the error is on the
+order of roundoff error for float64, but it is surprising that there is no improvement compared to datapoints at higher x-values,
+as the error in the first itteration is relatively high here.
 
 \begin{figure}
     \centering
@@ -64,18 +71,6 @@ snapshots at 1 and 10 itterations.
     plotted with the datapoints it was fitted to. The black text indicates 
     the absolute value of the deviation of the polynomial to the datapoints.}
     \label{fig:lu_itt}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\textwidth]{plots/vandermonde_itt_zoom.png}
-    \caption{The 19th degree Lagrange polynomial derived using LU 
-    decomposition (left) and itterative improvents thereon, 1 and 10 
-    itterations in the center and on the right resp. (evaluated for 1000 
-    points between highest- and lowest x-values in the data). This was 
-    plotted with the datapoints it was fitted to. The black text indicates 
-    the absolute value of the deviation of the polynomial to the datapoints.}
-    \label{fig:lu_itt_zoom}
 \end{figure}
 
 \subsection*{2d}

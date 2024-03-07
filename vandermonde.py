@@ -21,7 +21,6 @@ def LU_solve(LU, y):
     """
     Solve a system of linear equations using the LU decomposition of a matrix.
     """
-
     #y[0] = y[0]
     for i in range(1,len(y)):
         y[i] = (y[i] - np.sum(np.multiply(LU[i,:i],y[:i])))
@@ -32,71 +31,58 @@ def LU_solve(LU, y):
     
     return y
 
-# def LU_decomp_test():
-
-#     #mat = np.array([[1,2,3],[4,5,6],[7,8,9]])
-#     #mat = np.array([[4,5,6],[7,8,9],[1,2,3]],dtype=np.float32)Q
-#     mat = np.array([[1,2,1],[7,9,4],[3,8,5]],dtype=np.float32)
-#     LU = LU_decomp(mat)
-#     print("LU: ",LU)
-#     L = np.tril(LU, -1) + np.eye(3)
-#     U = np.triu(LU)
-#     print("L: ",L)
-#     print("U: ",U)
-#     print("L@U: ",np.matmul(L,U))
-
-#     #mat = np.array([[1,2,3],[4,5,6],[7,8,9]])
-#     #mat = np.array([[4,5,6],[7,8,9],[1,2,3]], dtype=np.float32)
-#     mat = np.array([[1,2,1],[7,9,4],[3,8,5]],dtype=np.float64)
-#     print(LU_solve(mat.copy(), np.array([1,1,1],dtype=np.float32)))
-#     print(mat@LU_solve(mat.copy(), np.array([25,74,91],dtype=np.float64)))
-
-
 def TwoA(data, silent=True):
     ##############
     ##### 2a #####
     ##############
     
+    # Convert the dataset into a Vandermonde matrix
     data.astype(np.float128)
     matrix = np.repeat([data[:,0]], data.shape[0], axis=0)
     power = np.arange(data.shape[0], dtype=np.float128)
     powers = np.repeat([power], data.shape[0], axis=0)
     matrix = np.power(matrix, powers.T).astype(np.float128)
 
+    # Perform a LU decomposition and use it to solve the system of linear equations
     LU = LU_decomp(matrix.copy().T)
     c = LU_solve(LU, data[:,1].astype(np.float128).copy())
 
+    # Print (if desired) and write to file
     if not silent:
+        print("Solution found (using LU Decomposition):")
         print(c)
     np.savetxt('vandermonde_coefficients.txt', c, delimiter=' ')
 
+    # Determine the polynomial found at 1000 points between the minimum and maximum x values
     x = np.linspace(np.min(data[:,0]), np.max(data[:,0]), 1000)
     powers = np.repeat([power], 1000, axis=0)
     xx = np.repeat([x], data.shape[0], axis=0)
     cc = np.repeat([c], 1000, axis=0)
     y = np.sum( np.multiply(cc.T, np.power(xx, powers.T)), axis=0 )
 
-    fig, ax = plt.subplots(1, 2, figsize=(10,5), dpi=192)
-    ax[0].plot(data[:,0], data[:,1], 'ro', label="datapoints")
-    ax[1].plot(data[:,0], data[:,1], 'ro', label="datapoints")
-    ax[0].plot(x, y, 'b', label='LU decomposition')
-    ax[1].plot(x, y, 'b', label='LU decomposition')
-    for i in range(data.shape[0]):
-        #ax[0].text(data[i,0], data[i,1]+250, str(f"{data[i,1]-y[np.argmin(np.abs(x-data[i,0]))]:.2f}"), fontdict={'size': 5})
-        #ax[1].text(data[i,0], data[i,1]+10, str(f"{data[i,1]-y[np.argmin(np.abs(x-data[i,0]))]:.2f}"), fontdict={'size': 5})
-        ax[0].text(data[i,0]-4, data[i,1]+(-1)**i*250, \
-                   np.format_float_scientific(np.abs(data[i,1]-np.sum( np.multiply(c.T, np.power(data[i,0], power)), axis=0 )), precision=2), fontdict={'size': 5})
-        ax[1].text(data[i,0]-4, data[i,1]+10, \
-                   np.format_float_scientific(np.abs(data[i,1]-np.sum( np.multiply(c.T, np.power(data[i,0], power)), axis=0 )), precision=2), fontdict={'size': 5})
+    # Plot the data and the polynomial
+    fig, ax = plt.subplots(2, 2, figsize=(10,5), dpi=192, gridspec_kw={'height_ratios': [6, 3]})
+    ax[0,0].plot(data[:,0], data[:,1], 'ro', label="datapoints")
+    ax[0,1].plot(data[:,0], data[:,1], 'ro', label="datapoints")
+    ax[0,0].plot(x, y, 'b', label='LU decomposition')
+    ax[0,1].plot(x, y, 'b', label='LU decomposition')
 
-    ax[0].set_xlabel('x')
-    ax[1].set_xlabel('x')
-    ax[0].set_ylabel('y')
-    ax[1].set_ylabel('y')
+    # Plot the deviation of the polynomial from the datapoints
+    dy = np.zeros((data.shape[0]))
+    for i in range(data.shape[0]):
+        dy[i] = np.abs(data[i,1]-np.sum( np.multiply(c.T, np.power(data[i,0], power))))
+    ax[1,0].plot(data[:,0], dy, label='LU')
+    ax[1,1].plot(data[:,0], dy, label='LU')
+
+    ax[1,0].set_xlabel('x')
+    ax[1,1].set_xlabel('x')
+    ax[0,0].set_ylabel('y')
+    ax[1,0].set_ylabel('|y(x)-y_0|')
     fig.suptitle('Solution to Vandermonde Matrix')
-    ax[1].set_ylim([np.min(data[:,1])-50, np.max(data[:,1])+50])
-    ax[0].legend()
-    ax[1].legend()
+    ax[0,1].set_ylim([np.min(data[:,1])-50, np.max(data[:,1])+50])
+    ax[1,1].set_yscale('log')
+    ax[0,0].legend()
+    ax[0,1].legend()
     #plt.yscale('log')
     fig.tight_layout()
     fig.savefig('plots/vandermonde.png')
@@ -180,34 +166,29 @@ def TwoB(data, fig=None, ax=None):
     ##############
     ##### 2b #####
     ##############
+
+    # Use nevilles algorithm to interpolate the data
     x = np.linspace(np.min(data[:,0]), np.max(data[:,0]), 1000)
     y_neville = np.zeros((len(x)))
     for i in range(len(x)):
         y_neville[i] = neville(x[i], data[:,0], data[:,1])
 
     if fig is not None and ax is not None:
-        #fig, ax = plt.subplots(1, 2, figsize=(10,4), dpi=192)
-        #ax[0].plot(data[:,0], data[:,1], 'ro', label='Data points')
-        #ax[1].plot(data[:,0], data[:,1], 'ro', label='Data points')
-        
-        ax[0].plot(x, y_neville, 'g', label="Neville's Algorithm")
-        ax[1].plot(x, y_neville, 'g', label="Neville's Algorithm")
+        ax[0,0].plot(x, y_neville, 'g', label="Neville's Algorithm")
+        ax[0,1].plot(x, y_neville, 'g', label="Neville's Algorithm")
 
+        # Plot the deviation from the datapoints
+        dy = np.zeros((data.shape[0]))
         for i in range(data.shape[0]):
-            ax[0].text(data[i,0]-4, data[i,1]+(-1)**i*250, \
-                    np.format_float_scientific(np.abs(data[i,1]-neville(data[i,0], data[:,0], data[:,1])), precision=2), fontdict={'size': 5})
-            ax[1].text(data[i,0]-4, data[i,1]+10, \
-                    np.format_float_scientific(np.abs(data[i,1]-neville(data[i,0], data[:,0], data[:,1])), precision=2), fontdict={'size': 5})
-        
-        ax[0].set_xlabel('x')
-        ax[1].set_xlabel('x')
-        ax[0].set_ylabel('y')
-        ax[1].set_ylabel('y')
+            dy[i] = np.abs(data[i,1]-neville(data[i,0], data[:,0], data[:,1]))
+        ax[1,0].plot(data[:,0], dy, label='Neville')
+        ax[1,1].plot(data[:,0], dy, label='Neville')
+
         fig.suptitle("Neville's Algorithm")
-        ax[1].set_ylim([np.min(data[:,1])-50, np.max(data[:,1])+50])
-        ax[0].legend()
-        ax[1].legend()
-        #plt.yscale('log')
+        ax[0,0].legend()
+        ax[0,1].legend()
+        ax[1,0].legend()
+        ax[1,1].legend()
         fig.tight_layout()
         plt.savefig('plots/neville_compare.png')
         plt.close()
@@ -230,17 +211,15 @@ def TwoC(data):
     LU = LU_decomp(matrix.copy().T)
     c = LU_solve(LU, data[:,1].astype(np.float128).copy())
 
-    #LU1 = c - LU_solve(matrix.copy().T, data[:,1].copy()-np.sum( np.multiply(c.T, np.power(data[:,0], power)), axis=0 ))
     LU1 = c - LU_solve(LU, matrix.T@c-data[:,1].copy())
 
     LU10 = LU1
     for i in range(9):
         LU10 = LU10 - LU_solve(LU, matrix.T@LU10-data[:,1].copy())
 
-    fig, ax = plt.subplots(1, 3, figsize=(15,5), dpi=192)
-    ax[0].plot(data[:,0], data[:,1], 'ro', label="datapoints")
-    ax[1].plot(data[:,0], data[:,1], 'ro', label="datapoints")
-    ax[2].plot(data[:,0], data[:,1], 'ro', label="datapoints")
+    fig, ax = plt.subplots(2, 2, figsize=(10,5), dpi=192)
+    ax[0,0].plot(data[:,0], data[:,1], 'ro', label="datapoints")
+    ax[0,1].plot(data[:,0], data[:,1], 'ro', label="datapoints")
     
     x = np.linspace(np.min(data[:,0]), np.max(data[:,0]), 1000)
     x_matrix = np.repeat([x], data.shape[0], axis=0)
@@ -250,64 +229,56 @@ def TwoC(data):
     x_matrix = np.power(x_matrix, powers.T).astype(np.float128)
 
     y = x_matrix.T@c
-    ax[0].plot(x,y, 'b', label='LU0')
+    ax[0,0].plot(x,y, label='LU0')
+    ax[0,1].plot(x,y, label='LU0')
 
     y = x_matrix.T@LU1
-    ax[1].plot(x, y, 'b', label='LU1')
+    ax[0,0].plot(x, y, label='LU1')
+    ax[0,1].plot(x, y, label='LU1')
 
     y = x_matrix.T@LU10
-    ax[2].plot(x, y, 'b', label='LU10')
+    ax[0,0].plot(x, y, label='LU10')
+    ax[0,1].plot(x, y, label='LU10')
 
     val_LU0 = matrix.T@c
     val_LU1 = matrix.T@LU1
     val_LU10 = matrix.T@LU10
     text = []
-    for i in range(data.shape[0]):
-        #ax[0].text(data[i,0], data[i,1]+250, str(f"{data[i,1]-y[np.argmin(np.abs(x-data[i,0]))]:.2f}"), fontdict={'size': 5})
-        #ax[1].text(data[i,0], data[i,1]+10, str(f"{data[i,1]-y[np.argmin(np.abs(x-data[i,0]))]:.2f}"), fontdict={'size': 5})
-        text.append(ax[0].text(data[i,0]-4, data[i,1]+(-1)**i*250, \
-                   np.format_float_scientific(np.abs(data[i,1]-val_LU0[i]), precision=2), fontdict={'size': 5}))
-        text.append(ax[1].text(data[i,0]-4, data[i,1]+(-1)**i*250, \
-                   np.format_float_scientific(np.abs(data[i,1]-val_LU1[i]), precision=2), fontdict={'size': 5}))
-        text.append(ax[2].text(data[i,0]-4, data[i,1]+(-1)**i*250, \
-                   np.format_float_scientific(np.abs(data[i,1]-val_LU10[i]), precision=2), fontdict={'size': 5}))
 
-    ax[0].set_xlabel('x')
-    ax[1].set_xlabel('x')
-    ax[2].set_xlabel('x')
-    ax[0].set_ylabel('y')
-    ax[1].set_ylabel('y')
-    ax[2].set_ylabel('y')
+    dy_LU0 = np.zeros((data.shape[0]))
+    dy_LU1 = np.zeros((data.shape[0]))
+    dy_LU10 = np.zeros((data.shape[0]))
+    for i in range(data.shape[0]):
+        dy_LU0[i] = np.abs(data[i,1]-val_LU0[i])
+        dy_LU1[i] = np.abs(data[i,1]-val_LU1[i])
+        dy_LU10[i] = np.abs(data[i,1]-val_LU10[i])
+    ax[1,0].plot(data[:,0], dy_LU0, label='LU0')
+    ax[1,1].plot(data[:,0], dy_LU0, label='LU0')
+    ax[1,0].plot(data[:,0], dy_LU1, label='LU1')
+    ax[1,1].plot(data[:,0], dy_LU1, label='LU1')
+    ax[1,0].plot(data[:,0], dy_LU10, label='LU10')
+    ax[1,1].plot(data[:,0], dy_LU10, label='LU10')
+
+    ax[1,0].set_xlabel('x')
+    ax[1,1].set_xlabel('x')
+    ax[0,0].set_ylabel('y')
+    ax[1,0].set_ylabel('y')
     fig.suptitle('Itterating on Vandermonde Matrix Solution')
-    #ax[1].set_ylim([np.min(data[:,1])-50, np.max(data[:,1])+50])
-    ax[0].legend()
-    ax[1].legend()
-    ax[2].legend()
-    #ax[0].set_yscale('log')
-    #ax[1].set_yscale('log')
+    ax[0,1].set_ylim([np.min(data[:,1])-50, np.max(data[:,1])+50])
+    ax[0,0].legend()
+    ax[0,1].legend()
+    ax[1,0].legend()
+    ax[1,1].legend()
+    ax[1,0].set_yscale('log')
+    ax[1,1].set_yscale('log')
     fig.tight_layout()
     fig.savefig('plots/vandermonde_itt.png')
-
-    for t in text:
-        t.remove()
-    for i in range(data.shape[0]):
-        text.append(ax[0].text(data[i,0]-4, data[i,1]+25, \
-                   np.format_float_scientific(np.abs(data[i,1]-val_LU0[i]), precision=2), fontdict={'size': 5}))
-        text.append(ax[1].text(data[i,0]-4, data[i,1]+25, \
-                   np.format_float_scientific(np.abs(data[i,1]-val_LU1[i]), precision=2), fontdict={'size': 5}))
-        text.append(ax[2].text(data[i,0]-4, data[i,1]+25, \
-                   np.format_float_scientific(np.abs(data[i,1]-val_LU10[i]), precision=2), fontdict={'size': 5}))
-
-    ax[0].set_ylim([np.min(data[:,1])-50, np.max(data[:,1])+50])
-    ax[1].set_ylim([np.min(data[:,1])-50, np.max(data[:,1])+50])
-    ax[2].set_ylim([np.min(data[:,1])-50, np.max(data[:,1])+50])
-    fig.savefig('plots/vandermonde_itt_zoom.png')
 
     plt.close()
 
 
 if __name__=='__main__':
-    data = np.loadtxt("Vandermonde.txt")
+    data = np.loadtxt("Vandermonde.txt", dtype=np.float64)
     fig, ax = TwoA(data, silent=False)
     TwoB(data, fig=fig, ax=ax)
     TwoC(data)
@@ -321,6 +292,3 @@ if __name__=='__main__':
 
     with open('vandermonde_timing.txt', 'w') as f:
         f.write(f"2a: {t_2a:.2e} s\n2b: {t_2b:.2e} s\n2c: {t_2c:.2e} s\n")
-    
-
-    

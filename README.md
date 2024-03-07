@@ -1,2 +1,2 @@
-# NURSolutionTemplate
-Description how to hand in your solutions for the course Numerical Recipes for Astrophysics
+# NUR HandIn 1
+My solutions to the first handin for the course Numerical Recipes in Astrophysics

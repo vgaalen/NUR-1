@@ -3,9 +3,9 @@
 The main challenge of this exercise is to find a method to calculate the 
 poisson distribution for sufficiently high values of $\lambda$ and k, without 
 exceeding the range of a 32-bit floating point number.
-I found two methods to do so. The first revolves around itteratively applying
-the $\lambda^k$ multiplication and $k!$ division. The second operates in
-log-space, and therefore performs operations on far smaller numbers.
+I found two methods to do so. The first revolves around calculating $\lambda^k$ and $k!$ step by step.
+By summing $\lambda/i$ from k to 1, we prevent overflow. 
+The second approach works in log-space, and therefore performs operations on far smaller numbers.
 It turned out that the second approach is a factor 2 faster over the set of
 values for $\lambda$ and k provided.
 
