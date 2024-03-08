@@ -55,7 +55,7 @@ In this exercise, we itterate on the LU decomposition done in (2a) to improve
 the solution. This is done by solving the system for the error found in the
 previous itteration. This should allow us to improve the solution as, if $c=c\mathaccent+\delta c$,
 then $(A c)=(A c')+(A \delta c)$.
-Figures \ref{fig:lu_itt} and \ref{fig:lu_itt_zoom} shows the result of this itterative improvement, with
+Figure \ref{fig:lu_itt} shows the result of this itterative improvement, with
 snapshots at 1 and 10 itterations.
 It turns out that these itteration do not reduce the error. This makes sense for the low x-values, where the error is on the
 order of roundoff error for float64, but it is surprising that there is no improvement compared to datapoints at higher x-values,
