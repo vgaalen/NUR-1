@@ -18,7 +18,7 @@ Figure \ref{fig:vandermonde} shows the result of the LU decomposition, implement
 
 \noindent
 This is the code used for this exercise:
-\lstinputlisting[language=python,firstline=1, lastline=103]{vandermonde.py}
+\lstinputlisting[language=python,firstline=1, lastline=89]{vandermonde.py}
 
 \subsection*{2b}
 Here we compare the polynomial found using LU decomposition to one found using Neville's algorithm.
@@ -48,7 +48,7 @@ than the LU decomposition (see the bottom half of \ref{fig:neville}).
 
 \noindent
 This is the code used for this exercise:
-\lstinputlisting[language=python, firstline=106, lastline=212]{vandermonde.py}
+\lstinputlisting[language=python, firstline=93, lastline=195]{vandermonde.py}
 
 \subsection*{2c}
 In this exercise, we itterate on the LU decomposition done in (2a) to improve
@@ -73,6 +73,10 @@ as the error in the first itteration is relatively high here.
     \label{fig:lu_itt}
 \end{figure}
 
+\noindent
+This is the code used for this exercise:
+\lstinputlisting[language=python, firstline=196, lastline=277]{vandermonde.py}
+
 \subsection*{2d}
 For this question we compare the time it takes to generate the polynomials
 discussed in (2a)-(2c). When averaging over 10 runs we get the following:
@@ -89,4 +93,4 @@ algorithm.
 
 \noindent
 This is the code used in this exercise:
-\lstinputlisting[language=python]{vandermonde.py}
+\lstinputlisting[language=python, firstline=280]{vandermonde.py}
